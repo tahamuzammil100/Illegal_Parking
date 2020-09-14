@@ -46,12 +46,14 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # image = cv2.imread(args["image"])
 cap = cv2.VideoCapture(args["video"])
 counter=0
-ret, image = cap.read()
-skip_frames=5
-illegal=False
 timer=0
 frequency_error=0
-
+ret, image = cap.read()
+skip_frames=2
+illegal=False
+alert=False
+illegal_detection_percent=30
+alarm_time=2
 
 while (ret):
 	counter+=1
@@ -83,6 +85,7 @@ while (ret):
 		# loop over the detections
 		# print( detections.shape[2])
 		# print(detections.shape[2])
+		
 		for i in np.arange(0, detections.shape[2]):
 			
 			
@@ -126,7 +129,7 @@ while (ret):
 					# print(detection_percentage,"%") # result: 0.25
 
 					
-					if(detection_percentage>=50):
+					if(detection_percentage>=illegal_detection_percent):
 						illegal=True
 						
 						# temp+=skip_frames
@@ -138,7 +141,6 @@ while (ret):
 
 					# ``````````````````````````````````````````````````````````
 
-					
 					# display the prediction
 					label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
 					# print("[INFO] {}".format(label))
@@ -147,33 +149,48 @@ while (ret):
 					y = startY - 15 if startY - 15 > 15 else startY + 15
 					cv2.putText(image, label+" Illegal:"+str(detection_percentage)[0:2]+"%", (startX, y),
 						cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+					
 
 			# end of if condition
-			# Define Alarm Time
-			time_check=30/skip_frames
+			# Define Alarm Time in seconds
+			# alarm_time=5
+			time_check=(30*alarm_time)/skip_frames
 
 			# print("time",time_check)
+			
 			if illegal==True:
 				frequency_error=0
 				timer+=1
 				# illegal=False
 				# print(timer)
+				
 				if math.floor(timer/100)>=time_check:
+					alert=True
 					print("************ wrong Parking ********",counter)
 					illegal=False
 
 			else:
 				frequency_error+=1
+				timer+=1
+
 				if(frequency_error==5):
 					timer=0
 					illegal=False
-					# print("************ Its Ok ********")
+					alert=False
+					print("************ Its Ok ********")
 					frequency_error=0
-				else:
-					timer+=1
+				# else:
+					
+
+
 		# show the output image
-		cv2.imshow("Output", image)
-		cv2.waitKey(1)
+		if alert==True:
+			cv2.putText(image, "Illegal Parking Alert !!!******", (5, 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+			cv2.imshow("Output", image)
+			cv2.waitKey(1)	
+		else:
+			cv2.imshow("Output", image)
+			cv2.waitKey(1)
 
 
 
