@@ -53,7 +53,7 @@ skip_frames=2
 illegal=False
 alert=False
 illegal_detection_percent=30
-alarm_time=2
+alarm_time=1    # In Seconds
 
 while (ret):
 	counter+=1
@@ -177,20 +177,20 @@ while (ret):
 					timer=0
 					illegal=False
 					alert=False
-					print("************ Its Ok ********")
+					# print("************ Its Ok ********")
 					frequency_error=0
 				# else:
 					
 
 
-		# show the output image
-		if alert==True:
-			cv2.putText(image, "Illegal Parking Alert !!!******", (5, 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
-			cv2.imshow("Output", image)
-			cv2.waitKey(1)	
-		else:
-			cv2.imshow("Output", image)
-			cv2.waitKey(1)
+			# show the output image
+			if alert==True:
+				cv2.putText(image, "Illegal Parking Alert !!!******", (5, 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+				cv2.imshow("Output", image)
+				cv2.waitKey(1)	
+			else:
+				cv2.imshow("Output", image)
+				cv2.waitKey(1)
 
 
 
