@@ -49,7 +49,7 @@ def task(video,prototxt,model):
   illegal=False
   alert=False
   illegal_detection_percent=20
-  alarm_time=3
+  alarm_time=2
   print("Testing")
 
   while (ret):
@@ -150,7 +150,7 @@ def task(video,prototxt,model):
 				# alarm_time=5
 		  time_check=(30*alarm_time)/skip_frames
 
-		  print("time",timer)
+		#   print("time",timer)
 		
 		  if illegal==True:
 			   frequency_error=0
@@ -160,22 +160,20 @@ def task(video,prototxt,model):
 			   if math.floor(timer)>=time_check:
 
 				   alert=True
-				   print("************ wrong Parking ********",math.floor(timer/100),time_check)
+				#    print("************ wrong Parking ********",math.floor(timer/100),time_check)
 				   illegal=True
 		  else:
 			   frequency_error+=1
 			#    timer=0
 			   timer+=1
-			   print("+++++  ELSE TIMER ",timer,"frequency timer ",frequency_error)
+			#    print("+++++  ELSE TIMER ",timer,"frequency timer ",frequency_error)
 			   if frequency_error>=5:
 				   illegal=False
 				   alert=False
-				   print("************ Its ok ********")
+	
 				   timer=0
 					  
-		#    timer=0 Ok ********", frequency_error)
-					#    frequency_error=0
-				# else:
+	
 						
 
 
@@ -183,12 +181,17 @@ def task(video,prototxt,model):
 		  if alert==True:
 
 			  cv2.putText(image, "Illegal Parking Alert !!!******", (5, 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
-			  cv2.imshow("Output", image)
+			#   print("Illegal Parking Alert !!!******")
+			#   cv2.imshow("Output", image)
+			  frames = cv2.imencode('.jpg', image)[1].tobytes()
+			  yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frames + b'\r\n')
+		
 			  cv2.waitKey(1)	
 		  else:
-			  print("hsnH")
+		
 			  cv2.putText(image, "OK", (5, 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
-			  cv2.imshow("Output", image)
+			  frames = cv2.imencode('.jpg', image)[1].tobytes()
+			  yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frames + b'\r\n')
 			  cv2.waitKey(1)
 
 
